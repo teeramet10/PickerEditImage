@@ -1,0 +1,48 @@
+PODS:
+  - CropViewController (2.5.4)
+  - FBSnapshotTestCase (2.1.4):
+    - FBSnapshotTestCase/SwiftSupport (= 2.1.4)
+  - FBSnapshotTestCase/Core (2.1.4)
+  - FBSnapshotTestCase/SwiftSupport (2.1.4):
+    - FBSnapshotTestCase/Core
+  - Nimble (7.3.4)
+  - Nimble-Snapshots (6.3.0):
+    - Nimble-Snapshots/Core (= 6.3.0)
+  - Nimble-Snapshots/Core (6.3.0):
+    - FBSnapshotTestCase (~> 2.0)
+    - Nimble (~> 7.0)
+  - PickerEditImage (0.1.0):
+    - CropViewController
+  - Quick (1.2.0)
+
+DEPENDENCIES:
+  - CropViewController
+  - FBSnapshotTestCase (~> 2.1.4)
+  - Nimble (~> 7.0)
+  - Nimble-Snapshots (~> 6.3.0)
+  - PickerEditImage (from `../`)
+  - Quick (~> 1.2.0)
+
+SPEC REPOS:
+  trunk:
+    - CropViewController
+    - FBSnapshotTestCase
+    - Nimble
+    - Nimble-Snapshots
+    - Quick
+
+EXTERNAL SOURCES:
+  PickerEditImage:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  CropViewController: 980df34ffc499db89755b2f307f20eca00cd40c6
+  FBSnapshotTestCase: 094f9f314decbabe373b87cc339bea235a63e07a
+  Nimble: 051e3d8912d40138fa5591c78594f95fb172af37
+  Nimble-Snapshots: f5459b5b091678dc942d03ec4741cacb58ba4a52
+  PickerEditImage: 73b002d914bab5a22508368f0ec08b8518fc437c
+  Quick: 58d203b1c5e27fff7229c4c1ae445ad7069a7a08
+
+PODFILE CHECKSUM: c06be089c539f3d08cb2afb5f123eedb10647845
+
+COCOAPODS: 1.9.1

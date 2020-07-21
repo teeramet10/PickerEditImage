@@ -2,7 +2,7 @@ use_frameworks!
 
 target 'PickerEditImage_Example' do
   pod 'PickerEditImage', :path => '../'
-
+  pod 'CropViewController'
   target 'PickerEditImage_Tests' do
     inherit! :search_paths
 
@@ -12,3 +12,4 @@ target 'PickerEditImage_Example' do
     pod 'Nimble-Snapshots' , '~> 6.3.0'
   end
 end
+

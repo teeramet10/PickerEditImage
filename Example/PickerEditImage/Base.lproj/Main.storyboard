@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="vXZ-lx-hvc">
-    <device id="retina4_7" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16097" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="vXZ-lx-hvc">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <capability name="collection view cell content view" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -20,11 +19,105 @@
                     <view key="view" contentMode="scaleToFill" id="kh9-bI-dsS">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Oln-XT-ZU8">
+                                <rect key="frame" x="8" y="316" width="359" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="q06-G3-82K"/>
+                                </constraints>
+                                <state key="normal" title="Picker"/>
+                                <connections>
+                                    <action selector="onPicker:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="iMU-zK-Puc"/>
+                                </connections>
+                            </button>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="DC0-cj-biF">
+                                <rect key="frame" x="8" y="8" width="359" height="300"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="300" id="E7b-Ww-SeI"/>
+                                </constraints>
+                                <collectionViewFlowLayout key="collectionViewLayout" automaticEstimatedItemSize="YES" minimumLineSpacing="10" minimumInteritemSpacing="10" id="rhL-Tg-l0Q">
+                                    <size key="itemSize" width="128" height="128"/>
+                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                </collectionViewFlowLayout>
+                                <cells>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="z69-aQ-C0A">
+                                        <rect key="frame" x="0.0" y="0.0" width="128" height="128"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="Tul-ed-FHv">
+                                            <rect key="frame" x="0.0" y="0.0" width="128" height="128"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                        </collectionViewCellContentView>
+                                    </collectionViewCell>
+                                </cells>
+                            </collectionView>
+                        </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="Oln-XT-ZU8" firstAttribute="top" secondItem="DC0-cj-biF" secondAttribute="bottom" constant="8" id="1UI-BO-9qX"/>
+                            <constraint firstItem="DC0-cj-biF" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" constant="8" id="AW6-sA-zfT"/>
+                            <constraint firstItem="Oln-XT-ZU8" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" constant="8" id="Cvf-Kn-hNz"/>
+                            <constraint firstAttribute="trailing" secondItem="Oln-XT-ZU8" secondAttribute="trailing" constant="8" id="Jh1-ha-w9i"/>
+                            <constraint firstItem="DC0-cj-biF" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" constant="8" id="hh6-aJ-nCR"/>
+                            <constraint firstAttribute="trailing" secondItem="DC0-cj-biF" secondAttribute="trailing" constant="8" id="qvu-co-7wC"/>
+                        </constraints>
                     </view>
+                    <connections>
+                        <outlet property="collectionView" destination="DC0-cj-biF" id="nQT-rg-cLk"/>
+                        <outlet property="pickerButton" destination="Oln-XT-ZU8" id="LQ0-9M-WpB"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="138" y="134"/>
+        </scene>
+        <!--View Image View Controller-->
+        <scene sceneID="5Y8-zE-n2e">
+            <objects>
+                <viewController storyboardIdentifier="ViewImageViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="5Bu-ei-gGE" customClass="ViewImageViewController" customModule="PickerEditImage_Example" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="NYD-5p-cRu"/>
+                        <viewControllerLayoutGuide type="bottom" id="1v1-WR-WgO"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="XTx-g5-Xv0">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4IU-u0-wtT">
+                                <rect key="frame" x="26" y="32" width="46" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="KNn-vs-siV"/>
+                                    <constraint firstAttribute="width" constant="46" id="dRG-eu-L7j"/>
+                                </constraints>
+                                <state key="normal" title="Close"/>
+                                <connections>
+                                    <action selector="onClose:" destination="5Bu-ei-gGE" eventType="touchUpInside" id="mtb-j5-wxj"/>
+                                </connections>
+                            </button>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="RSa-RO-1Fk" customClass="ImagePageView" customModule="PickerEditImage">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstItem="RSa-RO-1Fk" firstAttribute="top" secondItem="NYD-5p-cRu" secondAttribute="bottom" id="9eM-Yo-Aub"/>
+                            <constraint firstItem="1v1-WR-WgO" firstAttribute="top" secondItem="RSa-RO-1Fk" secondAttribute="bottom" id="FKd-ra-sre"/>
+                            <constraint firstItem="RSa-RO-1Fk" firstAttribute="leading" secondItem="XTx-g5-Xv0" secondAttribute="leading" id="Nwb-Yx-AFZ"/>
+                            <constraint firstAttribute="trailing" secondItem="RSa-RO-1Fk" secondAttribute="trailing" id="TQY-I4-8Yr"/>
+                            <constraint firstItem="4IU-u0-wtT" firstAttribute="leading" secondItem="XTx-g5-Xv0" secondAttribute="leadingMargin" constant="10" id="qlC-MY-Nle"/>
+                            <constraint firstItem="4IU-u0-wtT" firstAttribute="top" secondItem="NYD-5p-cRu" secondAttribute="bottom" constant="32" id="sAa-VD-MK8"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="imagepageVIew" destination="RSa-RO-1Fk" id="3NA-nJ-WES"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="JqJ-LL-vl6" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="826" y="133"/>
         </scene>
     </scenes>
 </document>

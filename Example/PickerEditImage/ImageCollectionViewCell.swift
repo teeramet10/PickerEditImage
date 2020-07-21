@@ -10,6 +10,11 @@ import UIKit
 
 class ImageCollectionViewCell: UICollectionViewCell {
 
+    @IBOutlet weak var imageView: UIImageView!
+    
+    static let identifier = "ImageCollectionViewCell"
+    static let nib = UINib.init(nibName: ImageCollectionViewCell.identifier, bundle: nil)
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
