@@ -24,7 +24,7 @@ TODO: Add long description of the pod here.
   s.homepage         = 'https://github.com/teeramet10/PickerEditImage'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
-  s.author           = { 'teeramet.kan@gmail.com' => 'teeramet.ka@one-email.co.th' }
+  s.author           = { 'Teeramet Kanchanapiroj' => 'teeramet.kan@gmail.com' }
   s.source           = { :git => 'https://github.com/teeramet10/PickerEditImage.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
