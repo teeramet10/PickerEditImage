@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "ic_right_arrowx1.png",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
