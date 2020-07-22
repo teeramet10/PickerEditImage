@@ -212,8 +212,6 @@ public class PickerEditImageViewController: UIViewController ,UIScrollViewDelega
                 selectedImage.append(data)
             }
         }
-        
-        
         dismiss(animated: true, completion: {
             self.onSend?(selectedImage)
         })
@@ -282,9 +280,10 @@ extension PickerEditImageViewController: CropViewControllerDelegate{
         }
         images[currentIndex].crop = cropRect
         
-        loadImageOperation(at: currentIndex)?.image = image
         
-        collectionView.reloadItems(at: [IndexPath.init(row: currentIndex, section: 0)])
+        if let cell = collectionView.cellForItem(at: IndexPath.init(row: currentIndex, section: 0)) as? PageImageViewCollectionViewCell{
+            cell.imagePageView.imageView.image = image
+        }
         
         onEditing?(images[currentIndex])
         

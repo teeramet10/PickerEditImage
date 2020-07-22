@@ -180,6 +180,7 @@ public class PickerImageAlbumViewController: UIViewController {
             guard let img = image.rotate(model.rotate)?.cropToRect(model.crop) else { return }
             guard let data = img.jpegData(compressionQuality: 1.0) else{return}
             let newModel = PickerImageModel()
+            newModel.phAsset = asset
             newModel.fileName = name
             newModel.image = img
             newModel.data = data
