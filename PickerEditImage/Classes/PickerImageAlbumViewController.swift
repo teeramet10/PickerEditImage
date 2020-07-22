@@ -136,8 +136,8 @@ public class PickerImageAlbumViewController: UIViewController {
     }
     
     func sendImage(){
+        var pickerList : [PickerImageModel] = []
         for index in 0...selectImage.count-1 {
-            var pickerList : [PickerImageModel] = []
             getOriginalSize(selectImage[index]){[weak self]picker in
                 guard let strongSelf = self else{return}
                 if index == strongSelf.selectImage.count-1{
@@ -149,6 +149,7 @@ public class PickerImageAlbumViewController: UIViewController {
                 }
             }
         }
+       
     }
     
     private func getOriginalSize(_ model :PickerImageModel,_ complete:@escaping ((PickerImageModel)-> Void)){
