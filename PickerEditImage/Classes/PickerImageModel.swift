@@ -9,7 +9,7 @@ import Foundation
 import Photos
 public class PickerImageModel{
     public var image : UIImage?
-    var phAsset : PHAsset?
+    public var phAsset : PHAsset?
     public var data : Data?
     public var fileExtension :String? = ""
     public var fileName :String? = ""
