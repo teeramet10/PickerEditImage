@@ -10,7 +10,7 @@ import Photos
 public class PickerImageModel{
     public var image : UIImage?
     var phAsset : PHAsset?
-    var data : Data?
+    public var data : Data?
     public var fileExtension :String? = ""
     public var fileName :String? = ""
     var isSelect : Bool = false

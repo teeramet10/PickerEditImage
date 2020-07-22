@@ -175,7 +175,8 @@ public class PickerImageAlbumViewController: UIViewController {
         func requestImage(_ info :[AnyHashable : Any]?){
             guard let name = info?["PHImageFileUTIKey"] as? String else{return}
             guard let indexExtension = name.index(of: ".") else{return}
-            let fileExtension = String(name.suffix(from: indexExtension))
+            var fileExtension = String(name.suffix(from: indexExtension))
+            fileExtension = fileExtension == "heic" ? "jpeg" : fileExtension
             guard let img = image.rotate(model.rotate)?.cropToRect(model.crop) else { return }
             guard let data = img.jpegData(compressionQuality: 1.0) else{return}
             let newModel = PickerImageModel()
