@@ -10,6 +10,7 @@
 To run the example project, clone the repo, and run `pod install` from the Example directory first.
 
 ## Requirements
+- iOS 10.0+
 
 ## Installation
 
@@ -20,22 +21,45 @@ it, simply add the following line to your Podfile:
 pod 'PickerEditImage'
 ```
 
+## ScreenShot
+
+<table align = "center">
+ <tr> Select image and album  </tr>
+ <tr>
+<p align = "center">
+
+<img src ="https://github.com/teeramet10/PickerEditImage/blob/master/screenshot/screen1.png" width="280">
+<img src ="https://github.com/teeramet10/PickerEditImage/blob/master/screenshot/screen2.png" width="280">
+</p>
+ </tr>
+  <tr>  Show full size and crop image  </tr>
+ <tr>
+<p  align = "center">
+
+<img src ="https://github.com/teeramet10/PickerEditImage/blob/master/screenshot/screen3.png" width="280">
+<img src ="https://github.com/teeramet10/PickerEditImage/blob/master/screenshot/screen4.png" width="280">
+</p>
+ </tr>
+ 
+ </table>
+
+
 ## Getting Started
 
-# Import 
+Import 
 ```
 import PickerEditImage
 
 ```
 
-# Initialization and presentation
+Initialization and presentation
 ```
  let vc =  PickerImageAlbumViewController.instantiateViewController()
  vc.delegate = self
  self.present(vc, animated: true, completion: nil)
 ```
 
-# Methods 
+Methods 
 ```
 class ViewController : PickerImageAlbumViewControllerDelegate{
     
