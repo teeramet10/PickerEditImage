@@ -60,6 +60,8 @@ extension ViewController : UICollectionViewDelegate , UICollectionViewDataSource
 extension ViewController : PickerImageAlbumViewControllerDelegate{
     
     func onSelect(_ selectedImage: [PickerImageModel]) {
+        
+        UIImage.init(data: <#T##Data#>)
         selectedImage.forEach{model in
             list.append(model)
         }
