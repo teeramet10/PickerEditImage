@@ -20,9 +20,44 @@ it, simply add the following line to your Podfile:
 pod 'PickerEditImage'
 ```
 
+## Getting Started
+
+# Import 
+```
+import PickerEditImage
+
+```
+
+# Initialization and presentation
+```
+ let vc =  PickerImageAlbumViewController.instantiateViewController()
+ vc.delegate = self
+ self.present(vc, animated: true, completion: nil)
+```
+
+# Methods 
+```
+class ViewController : PickerImageAlbumViewControllerDelegate{
+    
+    //Mark - PickerImageAlbumViewControllerDelegate methods
+    
+    func onSelect(_ selectedImage: [PickerImageModel]) {
+        let model = selectedImage[0]
+        self.imageView.image = model.image
+        
+        self.imageView.image = UIImage.init(data:model.data)
+
+        print(model.fileExtension)
+        print(model.fileName)
+
+    }
+}
+
+```
+
 ## Author
 
-teeramet.kan@gmail.com, teeramet.ka@one-email.co.th
+teeramet.kan@gmail.com
 
 ## License
 
