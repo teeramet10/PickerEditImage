@@ -7,27 +7,57 @@
 
 import Foundation
 import Photos
-
+import PhotosUI
+import UIKit
 protocol PhotoManagerDelegate {
     func loadCompleteCollection(_ collection : [AssetsCollection])
+    func loadNewCompleteCollection(_ collection : [AssetsCollection])
 }
-class PhotoManager{
+class PhotoManager: NSObject{
+
     lazy var imageManager: PHCachingImageManager = {
         return PHCachingImageManager()
     }()
     
     var delegate :PhotoManagerDelegate?
     
+    var collection : [AssetsCollection] = []
+    
     func getOption() -> PHFetchOptions {
-        
         let options = PHFetchOptions()
+        
         options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
         return options
     }
     
+    private func checkPermission( completionHandler :@escaping  ((PHAuthorizationStatus)->Void)){
+        if #available(iOS 14, *) {
+            PHPhotoLibrary.requestAuthorization(for: .readWrite) { status in
+                completionHandler(status)
+            }
+        } else {
+            
+        }
+        
+    }
     
-    func fetchCollection() {
-
+    func refresh(){
+        fetchCollection()
+    }
+    
+    func fetchCollection(viewController : UIViewController){
+        if #available(iOS 14, *) {
+            checkPermission(completionHandler: {[weak self ]status in
+                self?.fetchCollection()
+                
+            })
+        } else {
+            fetchCollection()
+        }
+    }
+    
+    private func fetchCollection() {
+        
         let options = getOption()
         
         @discardableResult
@@ -35,7 +65,8 @@ class PhotoManager{
             let fetchCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: subType, options: nil)
             if let collection = fetchCollection.firstObject, !result.contains(where: { $0.localIdentifier == collection.localIdentifier }) {
                 var assetsCollection = AssetsCollection(collection: collection)
-                assetsCollection.fetchResult = PHAsset.fetchAssets(in: collection, options: options)
+                let fetchResult = PHAsset.fetchAssets(in: collection, options: options)
+                assetsCollection.fetchResult = fetchResult
                 if assetsCollection.count > 0 {
                     result.append(assetsCollection)
                     return assetsCollection
@@ -59,19 +90,9 @@ class PhotoManager{
             //Videos
             getSmartAlbum(subType: .smartAlbumVideos, result: &assetCollections)
             
-            //Album
-            let albumsResult = PHCollectionList.fetchTopLevelUserCollections(with: nil)
-            albumsResult.enumerateObjects({ (collection, index, stop) -> Void in
-                guard let collection = collection as? PHAssetCollection else { return }
-                var assetsCollection = AssetsCollection(collection: collection)
-                assetsCollection.fetchResult = PHAsset.fetchAssets(in: collection, options: options)
-                
-                if assetsCollection.count > 0, !assetCollections.contains(where: { $0.localIdentifier == collection.localIdentifier }) {
-                    assetCollections.append(assetsCollection)
-                }
-            })
             
             DispatchQueue.main.async {
+                self?.collection = assetCollections
                 self?.delegate?.loadCompleteCollection(assetCollections)
             }
             
@@ -88,8 +109,7 @@ class PhotoManager{
             options?.deliveryMode = .opportunistic
             options?.isNetworkAccessAllowed = true
         }
-//        let scale = min(UIScreen.main.scale,2)
-//        let targetSize = CGSize(width: size.width*scale, height: size.height*scale)
+        
         let size = UIScreen.main.bounds.size
         let requestID = self.imageManager.requestImage(for: asset, targetSize: size, contentMode: .default, options: options) { image, info in
             let complete = (info?["PHImageResultIsDegradedKey"] as? Bool) == false
@@ -123,55 +143,3 @@ class PhotoManager{
         }
     }
 }
-
-public struct AssetsCollection {
-    var phAssetCollection: PHAssetCollection? = nil
-    var fetchResult: PHFetchResult<PHAsset>? = nil
-    var imageResult: [PickerImageModel] = []
-    var recentPosition: CGPoint = CGPoint.zero
-    var title: String
-    var localIdentifier: String
- 
-    public var sections: [(title: String, assets: [PHAsset])]? = nil
-    
-    var count: Int {
-        get {
-            guard let count = self.fetchResult?.count, count > 0 else { return   0 }
-            return count
-        }
-    }
-    
-    init(collection: PHAssetCollection) {
-        self.phAssetCollection = collection
-        self.title = collection.localizedTitle ?? ""
-        self.localIdentifier = collection.localIdentifier
-    }
-    
-    func getAsset(at index: Int) -> PHAsset? {
-        guard let result = self.fetchResult, index < result.count else { return nil }
-        return result.object(at: index)
-    }
-    
-    
-    
-    static func ==(lhs: AssetsCollection, rhs: AssetsCollection) -> Bool {
-        return lhs.localIdentifier == rhs.localIdentifier
-    }
-}
-
-
-extension UIImage {
-    func upOrientationImage() -> UIImage? {
-        switch imageOrientation {
-        case .up:
-            return self
-        default:
-            UIGraphicsBeginImageContextWithOptions(size, false, scale)
-            draw(in: CGRect(origin: .zero, size: size))
-            let result = UIGraphicsGetImageFromCurrentImageContext()
-            UIGraphicsEndImageContext()
-            return result
-        }
-    }
-}
-

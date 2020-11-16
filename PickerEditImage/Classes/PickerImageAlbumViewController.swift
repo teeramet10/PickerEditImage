@@ -17,7 +17,7 @@ public class PickerImageAlbumViewController: UIViewController {
     
     static var identifier = "PickerImageAlbumViewController"
     @IBOutlet weak var collectionView: UICollectionView!
-   
+    
     var selectImage :[PickerImageModel] = []
     var editingImage :[PickerImageModel] = []
     public var delegate : PickerImageAlbumViewControllerDelegate?
@@ -32,13 +32,12 @@ public class PickerImageAlbumViewController: UIViewController {
     let photoManager = PhotoManager.init()
     
     var collection: [AssetsCollection] = []
-
+    
     var imageCollection: [PickerImageModel] = []
     
     var cacheImageCollection: [Int:[PickerImageModel]] = [:]
-
-    var selectAlbum :AssetsCollection? = nil
     
+    var selectAlbum :AssetsCollection? = nil
     
     var complete :(([PickerImageModel])->Void)?
     
@@ -59,7 +58,7 @@ public class PickerImageAlbumViewController: UIViewController {
     
     override public func viewDidLoad() {
         super.viewDidLoad()
-
+        
         setUpView()
         photoManager.delegate = self
         if let presentVC = presentationController{
@@ -69,16 +68,24 @@ public class PickerImageAlbumViewController: UIViewController {
         if selectAlbum != nil{
             cacheImageCollection[selectIndex()] = imageCollection
         }
-        
         fetchCollection()
-        
     }
     
-   
     override public func viewDidAppear(_ animated: Bool) {
         collectionView.reloadData()
     }
- 
+    
+    
+    @IBAction func onCancel(_ sender: Any) {
+        cancel()
+        dismiss(animated: true, completion: nil)
+    }
+    
+    @IBAction func onDone(_ sender: Any) {
+        if(selectImage.count > 0){
+            sendImage()
+        }
+    }
     
     func clearData(){
         cacheImageCollection = [:]
@@ -91,9 +98,9 @@ public class PickerImageAlbumViewController: UIViewController {
             $0.isSelect = false
         }
     }
-
+    
     func fetchCollection(){
-        photoManager.fetchCollection()
+        photoManager.fetchCollection(viewController: self)
     }
     
     private func selectIndex() -> Int {
@@ -118,21 +125,11 @@ public class PickerImageAlbumViewController: UIViewController {
         imageArrowPopup.transform = CGAffineTransform.init(scaleX: 1, y: -1)
         
         viewTitle.addGestureRecognizer(UITapGestureRecognizer.init(target: self, action: #selector(tapShowAlbum)))
-        
     }
     
     func cancel(){
         complete?(selectImage)
         clearData()
-    }
-    
-    @IBAction func onCancel(_ sender: Any) {
-         cancel()
-         dismiss(animated: true, completion: nil)
-    }
-    
-    @IBAction func onDone(_ sender: Any) {
-        sendImage()
     }
     
     func sendImage(){
@@ -149,7 +146,7 @@ public class PickerImageAlbumViewController: UIViewController {
                 }
             }
         }
-       
+        
     }
     
     private func getOriginalSize(_ model :PickerImageModel,_ complete:@escaping ((PickerImageModel)-> Void)){
@@ -172,7 +169,7 @@ public class PickerImageAlbumViewController: UIViewController {
         let option = PHImageRequestOptions()
         option.isNetworkAccessAllowed = true
         option.isSynchronous = true
-       
+        
         func requestImage(_ info :[AnyHashable : Any]?){
             guard let name = info?["PHImageFileUTIKey"] as? String else{return}
             guard let indexExtension = name.index(of: ".") else{return}
@@ -187,7 +184,7 @@ public class PickerImageAlbumViewController: UIViewController {
             newModel.data = data
             newModel.fileExtension = fileExtension
             complete(newModel)
-          
+            
         }
         
         if #available(iOS 13, *) {
@@ -210,31 +207,45 @@ public class PickerImageAlbumViewController: UIViewController {
     func initTableView(){
         self.popupView.tableView.delegate = self
         self.popupView.tableView.dataSource = self
-       
+        
     }
     
     private func reloadTableView() {
         let count = min(5, self.collection.count)
-        var frame = self.popupView.popupView.frame
-        frame.size.height = CGFloat(count * 75)
-        self.popupView.popupViewHeight.constant = CGFloat(count * 75)
-        UIView.animate(withDuration: self.popupView.show ? 0.1:0) {
-            self.popupView.popupView.frame = frame
-            self.popupView.setNeedsLayout()
+        DispatchQueue.main.async {[weak self] in
+            guard let `self` = self else{return}
+            var frame = self.popupView.popupView.frame
+            frame.size.height = CGFloat(count * 75)
+            self.popupView.popupViewHeight.constant = CGFloat(count * 75)
+            UIView.animate(withDuration: self.popupView.show ? 0.1:0) {
+                self.popupView.popupView.frame = frame
+                self.popupView.setNeedsLayout()
+            }
+            self.popupView.tableView.reloadData()
+            self.popupView.setupPopupFrame()
         }
-        self.popupView.tableView.reloadData()
-        self.popupView.setupPopupFrame()
+        
     }
-    
     
     private func updateTitle() {
-        self.titleLabel.text = self.selectAlbum?.title
-        self.subtitleLabel.text = "Tab here to change"
+        DispatchQueue.main.async {[weak self] in
+            guard let `self` = self else{return}
+            self.titleLabel.text = self.selectAlbum?.title
+            self.subtitleLabel.text = "Tab here to change"
+        }
     }
-
+    
 }
 
 extension PickerImageAlbumViewController: PhotoManagerDelegate {
+    func loadNewCompleteCollection(_ collection: [AssetsCollection]) {
+        self.collection = collection
+        if let imageCollection = collection.first {
+            self.focusedRefresh(collection: imageCollection)
+        }
+        self.reloadTableView()
+    }
+    
     func loadCompleteCollection(_ collection: [AssetsCollection]) {
         self.collection = collection
         if let imageCollection = collection.first {
@@ -257,7 +268,7 @@ extension PickerImageAlbumViewController: UICollectionViewDelegate,UICollectionV
         cell.imgView.image = nil
         cell.index = indexPath.row
         cell.delegate = self
-          let model = imageCollection[indexPath.row]
+        let model = imageCollection[indexPath.row]
         guard let phasset = model.phAsset else{
             return UICollectionViewCell()
         }
@@ -270,10 +281,9 @@ extension PickerImageAlbumViewController: UICollectionViewDelegate,UICollectionV
         PhotoManager.getImageAssert(asset: phasset, size: size,contentMode: contentMode, completionBlock: {(images) in
             let data = self.imageCollection[indexPath.row]
             cell.imgView.image = images.fixOrientation().rotate(data.rotate)?.cropToRect(data.crop)
-//            self.imageCollection[indexPath.row].image = images
+            //            self.imageCollection[indexPath.row].image = images
         })
         guard let asset = imageCollection[indexPath.row].phAsset else { return cell }
-        
         
         if asset.mediaType == .video{
             cell.timeView.isHidden = false
@@ -281,15 +291,15 @@ extension PickerImageAlbumViewController: UICollectionViewDelegate,UICollectionV
         }else{
             cell.timeView.isHidden = true
         }
-
+        
         if  self.selectImage.firstIndex(where: {
-            $0.phAsset?.localIdentifier == asset.localIdentifier}) != nil
+                                            $0.phAsset?.localIdentifier == asset.localIdentifier}) != nil
         {
-             cell.imgSelect.setImage(ImageHelper.imageFor(named: "ic_available"), for: .normal)
+            cell.imgSelect.setImage(ImageHelper.imageFor(named: "ic_available"), for: .normal)
         }else{
-             cell.imgSelect.setImage(ImageHelper.imageFor(named: "ic_checkbox"), for: .normal)
+            cell.imgSelect.setImage(ImageHelper.imageFor(named: "ic_checkbox"), for: .normal)
         }
-
+        
         return cell
     }
     
@@ -329,7 +339,7 @@ extension PickerImageAlbumViewController: UICollectionViewDelegate,UICollectionV
                 editVC.disableSend()
             }
         }
-       
+        
         editVC.onSend = {[weak self] data in
             guard let strongSelf = self else{return}
             strongSelf.collectionView.reloadData()
@@ -372,17 +382,17 @@ extension PickerImageAlbumViewController: UICollectionViewDelegate,UICollectionV
             }){
                 strongSelf.selectImage.remove(at: index)
             }
-           
+            
             checkSend()
             
         }
         self.present(editVC, animated: true, completion: {})
         checkSend()
-         
+        
     }
     
     private func reloadCollection(){
-       
+        
         DispatchQueue.main.async {[weak self] in
             self?.collectionView.reloadData()
         }
@@ -394,7 +404,7 @@ extension PickerImageAlbumViewController : UITableViewDataSource,UITableViewDele
         return 1
     }
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-         return self.collection.count
+        return self.collection.count
     }
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -417,9 +427,56 @@ extension PickerImageAlbumViewController : UITableViewDataSource,UITableViewDele
         
         return cell
     }
-  
+    
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         focused(collection: collection[indexPath.row])
+    }
+    
+    private func focusedRefresh(collection: AssetsCollection){
+        func resetRequest() {
+            cancelAllImageAssets()
+        }
+        resetRequest()
+        self.selectAlbum = collection
+        DispatchQueue.main.async {[weak self] in
+            guard let `self` = self else{return}
+            self.collection[self.selectIndex()].recentPosition = self.collectionView.contentOffset
+        }
+        
+        guard let fetchResult = collection.fetchResult else{return}
+        
+        var imageList :[PickerImageModel] = []
+        for index in 0...fetchResult.count-1{
+            let model = PickerImageModel()
+            let list = self.editingImage.filter{$0.phAsset?.localIdentifier == fetchResult[index].localIdentifier}
+            if list.count > 0{
+                model.rotate = list.first?.rotate ?? 0
+                model.crop = list.first?.crop ?? CGRect.zero
+            }
+            model.phAsset =  fetchResult[index]
+            
+            let selectlist = self.selectImage.filter{$0.phAsset?.localIdentifier == fetchResult[index].localIdentifier}
+            if selectlist.count > 0{
+                model.isSelect = true
+            }
+            imageList.append(model)
+        }
+        imageCollection = imageList
+        cacheImageCollection[selectIndex()] = imageCollection
+        
+        
+        DispatchQueue.main.async {[weak self] in
+            guard let `self` = self else{return}
+            self.popupView.tableView.reloadData()
+        }
+        
+        self.popupView.show(false)
+        self.updateTitle()
+        self.reloadCollection()
+        DispatchQueue.main.async {[weak self] in
+            guard let `self` = self else{return}
+            self.collectionView.contentOffset = collection.recentPosition
+        }
     }
     
     private func focused(collection: AssetsCollection) {
@@ -431,6 +488,11 @@ extension PickerImageAlbumViewController : UITableViewDataSource,UITableViewDele
         self.collection[selectIndex()].recentPosition = self.collectionView.contentOffset
        
         guard let fetchResult = collection.fetchResult else{return}
+        DispatchQueue.main.async {[weak self] in
+            guard let `self` = self else{return}
+            self.collection[self.selectIndex()].recentPosition = self.collectionView.contentOffset
+        }
+        
         
         if  cacheImageCollection[selectIndex()] == nil{
             var imageList :[PickerImageModel] = []
@@ -463,24 +525,27 @@ extension PickerImageAlbumViewController : UITableViewDataSource,UITableViewDele
             }
         }
         
-      
         
-        self.popupView.tableView.reloadData()
+        DispatchQueue.main.async {[weak self] in
+            guard let `self` = self else{return}
+            self.popupView.tableView.reloadData()
+        }
+        
         self.popupView.show(false)
         self.updateTitle()
         self.reloadCollection()
-        self.collectionView.contentOffset = collection.recentPosition
+        DispatchQueue.main.async {[weak self] in
+            guard let `self` = self else{return}
+            self.collectionView.contentOffset = collection.recentPosition
+        }
         
     }
     
     private func cancelAllImageAssets() {
-//        self.requestIDs.forEach{ (indexPath, requestID) in
-//            self.photoLibrary.cancelPHImageRequest(requestID: requestID)
-//        }
-//        self.requestIDs.removeAll()
+
     }
     
-
+    
 }
 
 extension PickerImageAlbumViewController:ImageCollectionViewCellDelegate{
@@ -504,15 +569,13 @@ extension PickerImageAlbumViewController:ImageCollectionViewCellDelegate{
             
         }
         
-     
+        
     }
 }
 
 extension PickerImageAlbumViewController : UIAdaptivePresentationControllerDelegate{
     private func presentationControllerShouldDismiss(_ presentationController: UIPresentationController) -> Bool {
-         cancel()
+        cancel()
         return true
     }
-    
-
 }

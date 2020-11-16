@@ -11,7 +11,7 @@ PODS:
   - Nimble-Snapshots/Core (6.3.0):
     - FBSnapshotTestCase (~> 2.0)
     - Nimble (~> 7.0)
-  - PickerEditImage (1.0.1):
+  - PickerEditImage (1.0.8):
     - CropViewController
   - Quick (1.2.0)
 
@@ -40,9 +40,9 @@ SPEC CHECKSUMS:
   FBSnapshotTestCase: 094f9f314decbabe373b87cc339bea235a63e07a
   Nimble: 051e3d8912d40138fa5591c78594f95fb172af37
   Nimble-Snapshots: f5459b5b091678dc942d03ec4741cacb58ba4a52
-  PickerEditImage: a5919e92957f35584f650b2ef16437fa98592eee
+  PickerEditImage: 762750807deef5b30c10d616e5e4f4b4214e4825
   Quick: 58d203b1c5e27fff7229c4c1ae445ad7069a7a08
 
 PODFILE CHECKSUM: f543cf7589d1b1ebf655123c15e4d2ed472f25b4
 
-COCOAPODS: 1.9.1
+COCOAPODS: 1.10.0
