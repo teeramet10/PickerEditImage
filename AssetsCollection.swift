@@ -11,6 +11,7 @@ import Photos
 public struct AssetsCollection {
     var phAssetCollection: PHAssetCollection? = nil
     var fetchResult: PHFetchResult<PHAsset>?
+    var fetchList : [PHAsset] = []
     var imageResult: [PickerImageModel] = []
     var recentPosition: CGPoint = CGPoint.zero
     var title: String
@@ -20,8 +21,8 @@ public struct AssetsCollection {
     
     var count: Int {
         get {
-            guard let count = self.fetchResult?.count, count > 0 else { return   0 }
-            return count
+           
+            return fetchList.count
         }
     }
     
@@ -32,8 +33,8 @@ public struct AssetsCollection {
     }
     
     func getAsset(at index: Int) -> PHAsset? {
-        guard let result = self.fetchResult, index < result.count else { return nil }
-        return result.object(at: index)
+     
+        return fetchList[index]
     }
     
     

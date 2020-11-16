@@ -34,9 +34,7 @@ public class PickerImageAlbumViewController: UIViewController {
     var collection: [AssetsCollection] = []
     
     var imageCollection: [PickerImageModel] = []
-    
-    var cacheImageCollection: [Int:[PickerImageModel]] = [:]
-    
+        
     var selectAlbum :AssetsCollection? = nil
     
     var complete :(([PickerImageModel])->Void)?
@@ -61,12 +59,9 @@ public class PickerImageAlbumViewController: UIViewController {
         
         setUpView()
         photoManager.delegate = self
+        photoManager.register()
         if let presentVC = presentationController{
             presentVC.delegate = self
-        }
-        
-        if selectAlbum != nil{
-            cacheImageCollection[selectIndex()] = imageCollection
         }
         fetchCollection()
     }
@@ -88,7 +83,6 @@ public class PickerImageAlbumViewController: UIViewController {
     }
     
     func clearData(){
-        cacheImageCollection = [:]
         selectImage = []
         editingImage = []
         selectAlbum = nil
@@ -238,14 +232,6 @@ public class PickerImageAlbumViewController: UIViewController {
 }
 
 extension PickerImageAlbumViewController: PhotoManagerDelegate {
-    func loadNewCompleteCollection(_ collection: [AssetsCollection]) {
-        self.collection = collection
-        if let imageCollection = collection.first {
-            self.focusedRefresh(collection: imageCollection)
-        }
-        self.reloadTableView()
-    }
-    
     func loadCompleteCollection(_ collection: [AssetsCollection]) {
         self.collection = collection
         if let imageCollection = collection.first {
@@ -412,7 +398,7 @@ extension PickerImageAlbumViewController : UITableViewDataSource,UITableViewDele
         let collection = self.collection[indexPath.row]
         cell.nameLabel.text = collection.title
         
-        cell.countLabel.text = "\(collection.fetchResult?.count ?? 0)"
+        cell.countLabel.text = "\(collection.fetchList.count)"
         if let phAsset = collection.getAsset(at: 0) {
             let scale = UIScreen.main.scale
             let size = CGSize(width: 80*scale, height: 80*scale)
@@ -432,19 +418,20 @@ extension PickerImageAlbumViewController : UITableViewDataSource,UITableViewDele
         focused(collection: collection[indexPath.row])
     }
     
-    private func focusedRefresh(collection: AssetsCollection){
+    private func focused(collection: AssetsCollection) {
         func resetRequest() {
             cancelAllImageAssets()
         }
         resetRequest()
         self.selectAlbum = collection
+        self.collection[selectIndex()].recentPosition = self.collectionView.contentOffset
+       
         DispatchQueue.main.async {[weak self] in
             guard let `self` = self else{return}
             self.collection[self.selectIndex()].recentPosition = self.collectionView.contentOffset
         }
         
-        guard let fetchResult = collection.fetchResult else{return}
-        
+        let fetchResult = collection.fetchList
         var imageList :[PickerImageModel] = []
         for index in 0...fetchResult.count-1{
             let model = PickerImageModel()
@@ -462,69 +449,6 @@ extension PickerImageAlbumViewController : UITableViewDataSource,UITableViewDele
             imageList.append(model)
         }
         imageCollection = imageList
-        cacheImageCollection[selectIndex()] = imageCollection
-        
-        
-        DispatchQueue.main.async {[weak self] in
-            guard let `self` = self else{return}
-            self.popupView.tableView.reloadData()
-        }
-        
-        self.popupView.show(false)
-        self.updateTitle()
-        self.reloadCollection()
-        DispatchQueue.main.async {[weak self] in
-            guard let `self` = self else{return}
-            self.collectionView.contentOffset = collection.recentPosition
-        }
-    }
-    
-    private func focused(collection: AssetsCollection) {
-        func resetRequest() {
-            cancelAllImageAssets()
-        }
-        resetRequest()
-        self.selectAlbum = collection
-        self.collection[selectIndex()].recentPosition = self.collectionView.contentOffset
-       
-        guard let fetchResult = collection.fetchResult else{return}
-        DispatchQueue.main.async {[weak self] in
-            guard let `self` = self else{return}
-            self.collection[self.selectIndex()].recentPosition = self.collectionView.contentOffset
-        }
-        
-        
-        if  cacheImageCollection[selectIndex()] == nil{
-            var imageList :[PickerImageModel] = []
-            for index in 0...fetchResult.count-1{
-                let model = PickerImageModel()
-                let list = self.editingImage.filter{$0.phAsset?.localIdentifier == fetchResult.object(at: index).localIdentifier}
-                if list.count > 0{
-                    model.rotate = list.first?.rotate ?? 0
-                    model.crop = list.first?.crop ?? CGRect.zero
-                }
-                model.phAsset =  fetchResult.object(at: index)
-                
-                 let selectlist = self.selectImage.filter{$0.phAsset?.localIdentifier == fetchResult.object(at: index).localIdentifier}
-                if selectlist.count > 0{
-                    model.isSelect = true
-                }
-                imageList.append(model)
-            }
-            imageCollection = imageList
-            cacheImageCollection[selectIndex()] = imageList
-        }else{
-            imageCollection = cacheImageCollection[selectIndex()]  ?? []
-            imageCollection.forEach{data in
-                let list = self.editingImage.filter{$0.phAsset?.localIdentifier == data.phAsset?.localIdentifier}
-                if list.count > 0{
-                    data.rotate = list.first?.rotate ?? 0
-                    data.crop = list.first?.crop ?? CGRect.zero
-                }
-                
-            }
-        }
-        
         
         DispatchQueue.main.async {[weak self] in
             guard let `self` = self else{return}
@@ -544,8 +468,6 @@ extension PickerImageAlbumViewController : UITableViewDataSource,UITableViewDele
     private func cancelAllImageAssets() {
 
     }
-    
-    
 }
 
 extension PickerImageAlbumViewController:ImageCollectionViewCellDelegate{
