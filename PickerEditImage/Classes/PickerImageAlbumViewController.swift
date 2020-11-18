@@ -37,7 +37,7 @@ public class PickerImageAlbumViewController: UIViewController {
         
     var selectAlbum :AssetsCollection? = nil
     
-    var complete :(([PickerImageModel])->Void)?
+    public var complete :(([PickerImageModel])->Void)?
     
     var isCancel = false
     
@@ -134,6 +134,7 @@ public class PickerImageAlbumViewController: UIViewController {
                 if index == strongSelf.selectImage.count-1{
                     pickerList.append(picker)
                     strongSelf.delegate?.onSelect(pickerList)
+                    strongSelf.complete?(pickerList)
                     strongSelf.dismiss(animated: true, completion: nil)
                 }else{
                     pickerList.append(picker)
