@@ -58,7 +58,14 @@ Initialization and presentation
  vc.delegate = self
  self.present(vc, animated: true, completion: nil)
 ```
-
+or
+```
+ let vc =  PickerImageAlbumViewController.instantiateViewController()
+ vc.complete = {imageList in
+   //code
+ }
+ self.present(vc, animated: true, completion: nil)
+```
 Methods 
 ```
 class ViewController : PickerImageAlbumViewControllerDelegate{
